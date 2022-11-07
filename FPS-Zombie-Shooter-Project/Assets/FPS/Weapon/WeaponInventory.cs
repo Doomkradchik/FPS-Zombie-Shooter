@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class WeaponInventory
 {
     public WeaponInventory(FpsWeapon[] start,
-        AimTargetFinder aimTarget, Action<FpsWeapon> onDataChanged)
+        ClientRaycaster aimTarget, Action<FpsWeapon> onDataChanged)
     {
         _weapons = start;
         if (start.Length == 0)

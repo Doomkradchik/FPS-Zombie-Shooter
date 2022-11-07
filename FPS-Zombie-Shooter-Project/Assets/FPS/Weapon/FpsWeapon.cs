@@ -19,7 +19,7 @@ public abstract class FpsWeapon : MonoBehaviour
 
     private List<Transform> _children = null;
 
-    protected AimTargetFinder _aimTargetFinder;
+    protected ClientRaycaster _raycaster;
     protected bool _inited = false;
     protected Action<FpsWeapon> _onDataChanged;
 
@@ -38,9 +38,9 @@ public abstract class FpsWeapon : MonoBehaviour
             .ToList();
     }
 
-    public void Init(AimTargetFinder aimTargetFinder, Action<FpsWeapon> onDataChanged)
+    public void Init(ClientRaycaster aimTargetFinder, Action<FpsWeapon> onDataChanged)
     {
-        _aimTargetFinder = aimTargetFinder;
+        _raycaster = aimTargetFinder;
         _onDataChanged = onDataChanged;
         _inited = true;
         enabled = true;

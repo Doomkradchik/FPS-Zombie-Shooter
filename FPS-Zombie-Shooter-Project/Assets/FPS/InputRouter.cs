@@ -1,20 +1,23 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class InputRouter
 {
     public InputRouter(MovementSystem movementSystem, WeaponInventory inventory,
-        float fixedDeltaTime)
+        Func<Interaction> targetProvider, float fixedDeltaTime)
     {
-        _input = new PlayerInput2();
+        _input = new GameInput();
         _movementSystem = movementSystem;
         _inventory = inventory;
+        this.targetProvider = targetProvider;
         _fixedDeltaTime = fixedDeltaTime;
     }
 
-    private PlayerInput2 _input;
+    private GameInput _input;
     private readonly MovementSystem _movementSystem;
     private readonly WeaponInventory _inventory;
+    private readonly Func<Interaction> targetProvider;
     private readonly float _fixedDeltaTime;
 
     public void Enable()
@@ -23,6 +26,7 @@ public class InputRouter
         _input.Player.Hit.performed += OnHit;
         _input.Player.ChangeWeapon.performed += OnChangeWeapon;
         _input.Gun.Reload.performed += OnReload;
+        _input.Player.Interact.performed += OnInteract;
     }
 
     public void Disable()
@@ -31,6 +35,7 @@ public class InputRouter
         _input.Player.Hit.performed -= OnHit;
         _input.Player.ChangeWeapon.performed += OnChangeWeapon;
         _input.Gun.Reload.performed -= OnReload;
+        _input.Player.Interact.performed -= OnInteract;
     }
 
     public void FixedUpdate()
@@ -60,9 +65,8 @@ public class InputRouter
         _inventory.Next();
     }
 
-
-
-
-
-
+    private void OnInteract(InputAction.CallbackContext obj)
+    {
+        targetProvider.Invoke().Interact();
+    }
 }

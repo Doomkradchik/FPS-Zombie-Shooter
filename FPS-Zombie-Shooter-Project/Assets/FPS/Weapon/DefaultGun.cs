@@ -30,6 +30,7 @@ public class DefaultGun : FpsWeapon
 
         if (performing != null && performing.Clip != null)
             _gunAudioSouce.PlayOneShot(performing.Clip, _volume);
+
             
     }
 
@@ -57,9 +58,10 @@ public class DefaultGun : FpsWeapon
         if (shootAudio != null && shootAudio.Clip != null)
             _gunAudioSouce.PlayOneShot(shootAudio.Clip, _volume);
 
-        if (_aimTargetFinder.ThrowRay(MaxDistance, out RaycastHit hit))
-            OnTargeted(hit);
+        if (_raycaster.TryThrowRay(MaxDistance, out RaycastHit hit) == false)
+            return;
 
+        Instantiate(_holePrefab, hit.point, Quaternion.LookRotation(hit.normal));
     }
 
     public void Reload()
@@ -75,10 +77,6 @@ public class DefaultGun : FpsWeapon
         _onDataChanged?.Invoke(this);
     }
 
-    private void OnTargeted(RaycastHit hit)
-    {
-        Instantiate(_holePrefab, hit.point, Quaternion.LookRotation(hit.normal));
-    }
 }
 
 public class AnimationTrigger
@@ -89,25 +87,6 @@ public class AnimationTrigger
     public static readonly string Hit = "Hit";
 }
 
-
-public class AimTargetFinder
-{
-    public AimTargetFinder(RectTransform aimTransform, Camera camera)
-    {
-        _aimTransform = aimTransform;
-        _camera = camera;
-    }
-    private readonly RectTransform _aimTransform;
-    private readonly Camera _camera;
-    private Vector2 AimPosition =>
-       new Vector2(Screen.width, Screen.height) * 0.5f + _aimTransform.anchoredPosition;
-
-    public bool ThrowRay(float distance, out RaycastHit hit)
-    {
-        var ray = _camera.ScreenPointToRay(AimPosition);
-        return Physics.Raycast(ray, out hit, distance);
-    }
-}
 
 [Serializable]
 public sealed class AudioDataClip

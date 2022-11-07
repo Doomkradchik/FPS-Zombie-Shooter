@@ -10,8 +10,8 @@ public class Knife : FpsWeapon
         _animator.SetFloat("Blend", GetRandom());
         _animator.SetTrigger(AnimationTrigger.Hit);
 
-        if (_aimTargetFinder.ThrowRay(MaxDistance, out RaycastHit hit) == false)
-            return;
+        //if (_aimTargetFinder.ThrowRay(MaxDistance, out RaycastHit hit) == false)
+        //    return;
     }
 
     private float GetRandom()
