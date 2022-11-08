@@ -33,9 +33,7 @@ public class DefaultGun : FpsWeapon
             .Find(audio => audio.Kind == AudioDataClip.AudioKind.Perform);
 
         if (performing != null && performing.Clip != null)
-            _gunAudioSouce.PlayOneShot(performing.Clip, _volume);
-
-            
+            _gunAudioSouce.PlayOneShot(performing.Clip, _volume);    
     }
 
     public override void Hit()
@@ -63,6 +61,9 @@ public class DefaultGun : FpsWeapon
         if (shootAudio != null && shootAudio.Clip != null)
             _gunAudioSouce.PlayOneShot(shootAudio.Clip, _volume);
 
+        if (_raycaster.TryThrowRay(MaxDistance, out (Zombie, Vector3) data))
+            OnZombieHit(data.Item1, data.Item2);
+
         if (_raycaster.TryThrowRay(MaxDistance, out RaycastHit hit) == false)
             return;
 
@@ -88,6 +89,12 @@ public class DefaultGun : FpsWeapon
         muzzleFlash.transform.SetParent(_gunNozzle);
         muzzleFlash.transform.localPosition = Vector3.zero;
         muzzleFlash.transform.localRotation = Quaternion.identity;
+    }
+
+    private void OnZombieHit(Zombie zombie, Vector3 hitPoint)
+    {
+        var forceDirection = hitPoint - _gunNozzle.position;
+        zombie.OnHit(forceDirection * 100f, hitPoint);
     }
 
 }

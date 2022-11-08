@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 public class Zombie : MonoBehaviour
@@ -12,20 +13,29 @@ public class Zombie : MonoBehaviour
 
     private ZombieStateMachine _stateMachine;
 
+    public void OnHit(Vector3 force, Vector3 hitPoint)
+    {
+        _stateMachine.ChangeState(new DiedState(EnableRagdoll)); // to do
+
+        var rigidbodyHit = _bodyParts
+            .OrderBy(rigidbody => Vector3.Distance(rigidbody.position, hitPoint))
+            .First();
+
+        rigidbodyHit.AddForceAtPosition(force, hitPoint, ForceMode.Impulse);
+    }
+
     private void Awake()
     {
         _controller = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
         _bodyParts = GetComponentsInChildren<Rigidbody>();
         _stateMachine = new ZombieStateMachine();
-        _stateMachine.ChangeState(new WalkingState(EnableRagdoll, DisableRagdoll, _controller, _target));
+        _stateMachine.ChangeState(new WalkingState(DisableRagdoll, _controller, _target));
         DisableRagdoll();
     }
 
     private void Update() => _stateMachine.UpdateCurrentState(Time.deltaTime);
 
-    [ContextMenu("ChangeToRagdollState")]
-    public void ChangeState() => _stateMachine.ChangeState(new NullState());
 
     private void EnableRagdoll()
     {
@@ -49,7 +59,6 @@ public abstract class ZombieState
 {
     public abstract void Enter();
     public abstract void UpdateState(float deltaTime);
-    public abstract void Exit();
 }
 
 public class ZombieStateMachine
@@ -58,9 +67,6 @@ public class ZombieStateMachine
 
     public void ChangeState(ZombieState newState)
     {
-        if (currentState != null)
-            currentState.Exit();
-
         currentState = newState;
         currentState.Enter();
     }
@@ -74,22 +80,19 @@ public class ZombieStateMachine
 
 public sealed class WalkingState : ZombieState
 {
-    public WalkingState(Action enable, Action disable, CharacterController controller,
+    public WalkingState(Action disable, CharacterController controller,
         Transform target)  
     {
-        this.enable = enable;
         this.disable = disable;
         this.controller = controller;
         this.target = target;
     }
 
-    private readonly Action enable;
     private readonly Action disable;
     private readonly CharacterController controller;
     private readonly Transform target;
 
     public override void Enter() => disable?.Invoke();
-    public override void Exit() => enable?.Invoke();
 
     private const float DELTA_ANGLE = 120f;
     private const float SPEED = 0.5f;
@@ -115,11 +118,15 @@ public sealed class WalkingState : ZombieState
     }
 }
 
-public sealed class NullState : ZombieState
+public sealed class DiedState : ZombieState
 {
-    public override void Enter() { }
+    public DiedState(Action enable)
+    {
+        this.enable = enable;
+    }
+    private readonly Action enable;
 
-    public override void Exit() { }
+    public override void Enter() => enable?.Invoke();
 
     public override void UpdateState(float deltaTime) { }
 }

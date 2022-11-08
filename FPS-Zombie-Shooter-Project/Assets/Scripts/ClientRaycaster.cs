@@ -13,9 +13,33 @@ public sealed class ClientRaycaster : MonoBehaviour
     private Ray Ray => _camera.ScreenPointToRay(AimPosition);
 
 
+    public bool TryThrowRay<T>(float distance, out (T, Vector3) data) where T : MonoBehaviour
+    {
+        data = (null, Vector3.zero);
+
+        if (Physics.Raycast(Ray, out RaycastHit hit, distance) == false)
+            return false;
+
+        if (hit.collider.TryGetComponent(out T obj))
+        {
+            data = (obj, hit.point);
+            return true;
+        }
+        else
+        {
+            var target = hit.collider.GetComponentInParent<T>();
+            if (target == null)
+                return false;
+
+            data = (target, hit.point);
+            return true;
+        }
+    }
+
     public bool TryThrowRay<T>(float distance, out T target) where T : MonoBehaviour
     {
         target = null;
+
         if (Physics.Raycast(Ray, out RaycastHit hit, distance) == false)
             return false;
 
