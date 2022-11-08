@@ -10,7 +10,7 @@ public sealed class ClientRaycaster : MonoBehaviour
     private Vector2 AimPosition =>
           new Vector2(Screen.width, Screen.height) * 0.5f + _aimTransform.anchoredPosition;
 
-    private Ray Ray => _camera.ScreenPointToRay(AimPosition);
+    public Ray Ray => _camera.ScreenPointToRay(AimPosition);
 
 
     public bool TryThrowRay<T>(float distance, out (T, Vector3) data) where T : MonoBehaviour
@@ -46,8 +46,8 @@ public sealed class ClientRaycaster : MonoBehaviour
         return hit.collider.TryGetComponent(out target);
     }
 
-    public bool TryThrowRay(float distance, out RaycastHit target)
+    public bool TryThrowRay(float distance, out RaycastHit target, LayerMask mask)
     {
-        return Physics.Raycast(Ray, out target, distance);
+        return Physics.Raycast(Ray, out target, distance, mask);
     }
 }

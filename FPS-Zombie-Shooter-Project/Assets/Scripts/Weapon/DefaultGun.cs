@@ -4,6 +4,8 @@ using UnityEngine;
 public class DefaultGun : FpsWeapon
 {
     [SerializeField]
+    private LayerMask _layerMask;
+    [SerializeField]
     private GameObject _holePrefab;
     [SerializeField]
     private Transform _gunNozzle;
@@ -18,6 +20,9 @@ public class DefaultGun : FpsWeapon
             = Animator.StringToHash("Idle");
 
     protected override float MaxDistance => 100f;
+    protected override float ShotForce => 100f;
+    protected override float Damage => 200f; // to do
+
     private readonly float _volume = 0.5f;
 
     protected override void OnEnable()
@@ -36,7 +41,7 @@ public class DefaultGun : FpsWeapon
             _gunAudioSouce.PlayOneShot(performing.Clip, _volume);    
     }
 
-    public override void Hit()
+    public override void OnHit()
     {
         if (_inited == false)
             throw new System.InvalidOperationException();
@@ -61,13 +66,8 @@ public class DefaultGun : FpsWeapon
         if (shootAudio != null && shootAudio.Clip != null)
             _gunAudioSouce.PlayOneShot(shootAudio.Clip, _volume);
 
-        if (_raycaster.TryThrowRay(MaxDistance, out (Zombie, Vector3) data))
-            OnZombieHit(data.Item1, data.Item2);
-
-        if (_raycaster.TryThrowRay(MaxDistance, out RaycastHit hit) == false)
-            return;
-
-        Instantiate(_holePrefab, hit.point, Quaternion.LookRotation(hit.normal));
+        if (_raycaster.TryThrowRay(MaxDistance, out RaycastHit hit, _layerMask))
+            Instantiate(_holePrefab, hit.point, Quaternion.LookRotation(hit.normal));
     }
 
     public void Reload()
@@ -90,13 +90,6 @@ public class DefaultGun : FpsWeapon
         muzzleFlash.transform.localPosition = Vector3.zero;
         muzzleFlash.transform.localRotation = Quaternion.identity;
     }
-
-    private void OnZombieHit(Zombie zombie, Vector3 hitPoint)
-    {
-        var forceDirection = hitPoint - _gunNozzle.position;
-        zombie.OnHit(forceDirection * 100f, hitPoint);
-    }
-
 }
 
 public class AnimationTrigger

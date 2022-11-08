@@ -4,14 +4,13 @@ using Random = UnityEngine.Random;
 public class Knife : FpsWeapon
 {
     protected override float MaxDistance => 2f;
+    protected override float ShotForce => 50f;
+    protected override float Damage => 100f;
 
-    public override void Hit()
+    public override void OnHit()
     {
         _animator.SetFloat("Blend", GetRandom());
         _animator.SetTrigger(AnimationTrigger.Hit);
-
-        //if (_aimTargetFinder.ThrowRay(MaxDistance, out RaycastHit hit) == false)
-        //    return;
     }
 
     private float GetRandom()

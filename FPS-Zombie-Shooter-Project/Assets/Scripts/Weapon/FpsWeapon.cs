@@ -24,6 +24,8 @@ public abstract class FpsWeapon : MonoBehaviour
     protected Action<FpsWeapon> _onDataChanged;
 
     protected abstract float MaxDistance { get; }
+    protected abstract float ShotForce { get; }
+    protected abstract float Damage { get; }
 
     protected virtual void OnEnable()
     {
@@ -66,5 +68,16 @@ public abstract class FpsWeapon : MonoBehaviour
         _animator.SetTrigger("Perform");
     }
 
-    public abstract void Hit();
+    public void Hit()
+    {
+        OnHit();
+
+        if (_raycaster.TryThrowRay(MaxDistance, out (Zombie, Vector3) data))
+            OnZombieHit(data.Item1, data.Item2);
+    }
+    public virtual void OnHit() { }
+    protected void OnZombieHit(Zombie zombie, Vector3 hitPoint)
+    {
+        zombie.OnHit(_raycaster.Ray.direction.normalized * ShotForce, hitPoint);
+    }
 }
