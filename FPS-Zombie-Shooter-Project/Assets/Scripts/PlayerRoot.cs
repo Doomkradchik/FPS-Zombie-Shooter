@@ -8,6 +8,9 @@ public class PlayerRoot : MonoBehaviour
     private DefaultGun _defaultGun;
 
     [SerializeField]
+    private StressReceiver _cameraShakeFX;
+
+    [SerializeField]
     private FpsWeapon[] _weapons;
 
     [SerializeField]
@@ -24,16 +27,7 @@ public class PlayerRoot : MonoBehaviour
 
     private readonly float _interactionDistance = 2f;
 
-    private float _health = 100f;
-    public float Health 
-    {
-        get => _health;
-        private set
-        {
-            _health = value;
-            _healthView.UpdateHealthText(_health);
-        }
-    } 
+    public float Health { get; private set; } = 100f;
 
     private Interaction _target;
 
@@ -62,7 +56,7 @@ public class PlayerRoot : MonoBehaviour
 
         _inputRouter =
             new InputRouter(_movementSystem, _inventory, () => _target, Time.fixedDeltaTime);
-        _healthView.UpdateHealthText(_health);
+        _healthView.UpdateHealthText(Health);
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -91,8 +85,11 @@ public class PlayerRoot : MonoBehaviour
         if (damage < 0f)
             throw new System.InvalidOperationException();
 
+        _cameraShakeFX.InduceStress();
+        _healthView.UpdateHealthText(Health);
+        _healthView.PerformScreenEffect(PlayerHealthView.ScreenFXKind.Hurt);
+
         Health -= damage;
-        Debug.Log(Health);
         if (Health <= 0f)
             OnDie();
     }

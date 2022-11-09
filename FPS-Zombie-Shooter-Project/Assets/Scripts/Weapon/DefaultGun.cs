@@ -81,14 +81,17 @@ public class DefaultGun : FpsWeapon
         if (_inited == false)
             throw new System.InvalidOperationException();
 
+        if (CurrentState.shortNameHash == _realoadState)
+            return;
+
+        if (Bullets + 1 > _maxBullets)
+            return;
+
         _animator.SetTrigger(AnimationTrigger.Reload);
     }
 
     public void OnReloaded()
     {
-        if (Bullets + 1 > _maxBullets)
-            return;
-
         Bullets = _maxBullets;
         _onDataChanged?.Invoke(this);
     }
