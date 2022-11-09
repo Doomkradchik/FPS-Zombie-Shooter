@@ -24,7 +24,7 @@ public class DefaultGun : FpsWeapon
 
     protected override float MaxDistance => 100f;
     protected override float ShotForce => 100f;
-    protected override float Damage => 100f; // to do
+    protected override float Damage => 200f; // to do
 
     private readonly float _volume = 0.5f;
 
