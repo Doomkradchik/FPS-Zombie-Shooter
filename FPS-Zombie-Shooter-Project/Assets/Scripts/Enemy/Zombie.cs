@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class Zombie : MonoBehaviour
 {
     [SerializeField]
-    private Transform _target;
+    private PlayerRoot _target;
 
     [SerializeField]
     private HitBox[] _hitBoxes;
@@ -18,22 +18,52 @@ public class Zombie : MonoBehaviour
     private ZombieStateMachine _stateMachine;
 
     public float Health { get; private set; } = 100f;
+    public float Damage => 20f;
 
     private const float TOP_RATIO = 1f;
     private const float MIDDLE_RATIO = 0.5f;
     private const float DOWN_RATIO = 0.25f;
 
+    private static int _attackState =
+        Animator.StringToHash("Attack");
+
+    private ZombieState[] _states;
+
+    private float DistanceFromTarget
+        => Vector3.Distance(transform.position, _target.transform.position);
+
+    private readonly float _affectedDistance = 2.5f;
+
     private void Awake()
     {
         _controller = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
-        _bodyParts = GetComponentsInChildren<Rigidbody>();
+        _bodyParts = GetComponentsInChildren<Rigidbody>(); 
+    }
+
+    private void Start()
+    {
+        _states = new ZombieState[]
+        {
+            new WalkingState(DisableRagdoll, _controller, _target.transform),
+            new AttackState(_animator),
+            new DiedState(EnableRagdoll)
+        };
+
         _stateMachine = new ZombieStateMachine();
-        _stateMachine.ChangeState(new WalkingState(DisableRagdoll, _controller, _target));
+        _stateMachine.ChangeState(_states[0]);
         DisableRagdoll();
     }
 
-    private void Update() => _stateMachine.UpdateCurrentState(Time.deltaTime);
+    private void Update()
+    {
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+
+        if(stateInfo.shortNameHash != _attackState && DistanceFromTarget < _affectedDistance)
+            _stateMachine.ChangeState(_states[1]);
+
+        _stateMachine.UpdateCurrentState(Time.deltaTime);
+    }
     public void OnHit(Vector3 force, Vector3 hitPoint, float damage)
     {
         var rigidbodyHit = _bodyParts
@@ -53,6 +83,14 @@ public class Zombie : MonoBehaviour
 
         if (isDied)
             OnDied(rigidbodyHit, force, hitPoint);
+    }
+
+    public void OnAttackAnimationEnded()
+    {
+        _stateMachine.ChangeState(_states[0]);
+
+        if(DistanceFromTarget < _affectedDistance)
+         _target.TakeDamage(Damage);
     }
 
     private void TakeDamage(float damage, HitBox.BodyPart part, out bool isDied)
@@ -83,10 +121,9 @@ public class Zombie : MonoBehaviour
 
     private void OnDied(Rigidbody part, Vector3 force, Vector3 hitPoint)
     {
-        _stateMachine.ChangeState(new DiedState(EnableRagdoll));
+        _stateMachine.ChangeState(_states[2]);
         part.AddForceAtPosition(force, hitPoint, ForceMode.Impulse);
     }
-
 
     private void EnableRagdoll()
     {
@@ -118,8 +155,11 @@ public class ZombieStateMachine
 
     public void ChangeState(ZombieState newState)
     {
-        currentState = newState;
-        currentState.Enter();
+        if(currentState == null || currentState != newState)
+        {
+            currentState = newState;
+            currentState.Enter();
+        }   
     }
 
     public void UpdateCurrentState(float deltaTime)
@@ -127,6 +167,19 @@ public class ZombieStateMachine
         if (currentState != null) 
             currentState.UpdateState(deltaTime);
     }
+}
+
+public sealed class AttackState : ZombieState
+{
+    public AttackState(Animator animator)
+    {
+        this.animator = animator;
+    }
+    private readonly Animator animator;
+    public static readonly string _attackKey = "Attack";
+    public override void Enter() => animator.SetTrigger(_attackKey);
+
+    public override void UpdateState(float deltaTime) { }
 }
 
 public sealed class WalkingState : ZombieState
@@ -146,12 +199,12 @@ public sealed class WalkingState : ZombieState
     public override void Enter() => disable?.Invoke();
 
     private const float DELTA_ANGLE = 120f;
-    private const float SPEED = 0.5f;
 
     public override void UpdateState(float deltaTime)
     {
         var direction = target.position - controller.transform.position;
         direction = new Vector3(direction.x, 0f, direction.z);
+
         LookAt(direction, deltaTime);
         Move();
     }

@@ -23,7 +23,7 @@ public class DefaultGun : FpsWeapon
             = Animator.StringToHash("Reload");
 
     protected override float MaxDistance => 100f;
-    protected override float ShotForce => 100f;
+    protected override float ShotForce => 150f;
     protected override float Damage => 200f; // to do
 
     private readonly float _volume = 0.5f;

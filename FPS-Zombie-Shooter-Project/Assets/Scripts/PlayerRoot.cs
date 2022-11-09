@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [RequireComponent(typeof(ClientRaycaster), typeof(MovementSystem))]
 public class PlayerRoot : MonoBehaviour
@@ -13,6 +14,8 @@ public class PlayerRoot : MonoBehaviour
     private ClampedBulletTextUI _clampedBulletTextUI;
     [SerializeField]
     private InteractionMessageView _messageView;
+    [SerializeField]
+    private PlayerHealthView _healthView;
 
     private InputRouter _inputRouter;
     private WeaponInventory _inventory;
@@ -21,7 +24,19 @@ public class PlayerRoot : MonoBehaviour
 
     private readonly float _interactionDistance = 2f;
 
+    private float _health = 100f;
+    public float Health 
+    {
+        get => _health;
+        private set
+        {
+            _health = value;
+            _healthView.UpdateHealthText(_health);
+        }
+    } 
+
     private Interaction _target;
+
     private Interaction CurrentTarget
     {
         get => _target;
@@ -47,6 +62,7 @@ public class PlayerRoot : MonoBehaviour
 
         _inputRouter =
             new InputRouter(_movementSystem, _inventory, () => _target, Time.fixedDeltaTime);
+        _healthView.UpdateHealthText(_health);
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -68,5 +84,21 @@ public class PlayerRoot : MonoBehaviour
     private void FixedUpdate()
     {
         _inputRouter.FixedUpdate();
+    }
+
+    public void TakeDamage(float damage)
+    {
+        if (damage < 0f)
+            throw new System.InvalidOperationException();
+
+        Health -= damage;
+        Debug.Log(Health);
+        if (Health <= 0f)
+            OnDie();
+    }
+
+    private void OnDie()
+    {
+        //throw new NotImplementedException();
     }
 }

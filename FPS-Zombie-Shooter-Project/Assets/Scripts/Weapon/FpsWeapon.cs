@@ -66,6 +66,7 @@ public abstract class FpsWeapon : MonoBehaviour
             .ForEach(ch => ch.gameObject.SetActive(true));
 
         _animator.SetTrigger("Perform");
+        _onDataChanged?.Invoke(this);
     }
     public abstract void Hit();
     protected void OnZombieHit(Zombie zombie, Vector3 hitPoint)
