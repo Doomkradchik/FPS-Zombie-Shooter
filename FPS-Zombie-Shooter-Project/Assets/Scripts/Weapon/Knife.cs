@@ -7,7 +7,7 @@ public class Knife : FpsWeapon
     protected override float ShotForce => 50f;
     protected override float Damage => 100f;
 
-    public override void OnHit()
+    public override void Hit()
     {
         _animator.SetFloat("Blend", GetRandom());
         _animator.SetTrigger(AnimationTrigger.Hit);

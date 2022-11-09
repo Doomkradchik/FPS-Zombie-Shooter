@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class DefaultGun : FpsWeapon
@@ -18,10 +19,12 @@ public class DefaultGun : FpsWeapon
 
     private static readonly int _idleState
             = Animator.StringToHash("Idle");
+    private static readonly int _realoadState
+            = Animator.StringToHash("Reload");
 
     protected override float MaxDistance => 100f;
     protected override float ShotForce => 100f;
-    protected override float Damage => 200f; // to do
+    protected override float Damage => 100f; // to do
 
     private readonly float _volume = 0.5f;
 
@@ -41,7 +44,7 @@ public class DefaultGun : FpsWeapon
             _gunAudioSouce.PlayOneShot(performing.Clip, _volume);    
     }
 
-    public override void OnHit()
+    public override void Hit()
     {
         if (_inited == false)
             throw new System.InvalidOperationException();
@@ -68,6 +71,9 @@ public class DefaultGun : FpsWeapon
 
         if (_raycaster.TryThrowRay(MaxDistance, out RaycastHit hit, _layerMask))
             Instantiate(_holePrefab, hit.point, Quaternion.LookRotation(hit.normal));
+
+        if (_raycaster.TryThrowRay(MaxDistance, out (Zombie, Vector3) data))
+            OnZombieHit(data.Item1, data.Item2);
     }
 
     public void Reload()
@@ -75,13 +81,18 @@ public class DefaultGun : FpsWeapon
         if (_inited == false)
             throw new System.InvalidOperationException();
 
+        _animator.SetTrigger(AnimationTrigger.Reload);
+    }
+
+    public void OnReloaded()
+    {
         if (Bullets + 1 > _maxBullets)
             return;
 
         Bullets = _maxBullets;
-        _animator.SetTrigger(AnimationTrigger.Reload);
         _onDataChanged?.Invoke(this);
     }
+
 
     private void SpawnMuzzleFlash()
     {
@@ -98,6 +109,7 @@ public class AnimationTrigger
     public static readonly string Reload = "Reload";
     public static readonly string Perform = "Perform";
     public static readonly string Hit = "Hit";
+    public static readonly string CanShoot = "CanShoot";
 }
 
 

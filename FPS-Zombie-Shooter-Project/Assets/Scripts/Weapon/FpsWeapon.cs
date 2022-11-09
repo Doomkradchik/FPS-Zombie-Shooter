@@ -67,17 +67,9 @@ public abstract class FpsWeapon : MonoBehaviour
 
         _animator.SetTrigger("Perform");
     }
-
-    public void Hit()
-    {
-        OnHit();
-
-        if (_raycaster.TryThrowRay(MaxDistance, out (Zombie, Vector3) data))
-            OnZombieHit(data.Item1, data.Item2);
-    }
-    public virtual void OnHit() { }
+    public abstract void Hit();
     protected void OnZombieHit(Zombie zombie, Vector3 hitPoint)
     {
-        zombie.OnHit(_raycaster.Ray.direction.normalized * ShotForce, hitPoint);
+        zombie.OnHit(_raycaster.Ray.direction.normalized * ShotForce, hitPoint, Damage);
     }
 }
