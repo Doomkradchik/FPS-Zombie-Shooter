@@ -64,26 +64,6 @@ public class Zombie : MonoBehaviour
 
         _stateMachine.UpdateCurrentState(Time.deltaTime);
     }
-    public void OnHit(Vector3 force, Vector3 hitPoint, float damage)
-    {
-        var rigidbodyHit = _bodyParts
-            .OrderBy(rigidbody => Vector3.Distance(rigidbody.position, hitPoint))
-            .First();
-
-        var part = HitBox.BodyPart.None;
-
-        foreach (var hitBox in _hitBoxes)
-            if (rigidbodyHit.GetComponent<Collider>() == hitBox.HitCollider)
-            {
-                part = hitBox.Part;
-                break;
-            }
-
-        TakeDamage(damage, part, out bool isDied);
-
-        if (isDied)
-            OnDied(rigidbodyHit, force, hitPoint);
-    }
 
     public void OnAttackAnimationEnded()
     {
@@ -93,36 +73,58 @@ public class Zombie : MonoBehaviour
          _target.TakeDamage(Damage);
     }
 
-    private void TakeDamage(float damage, HitBox.BodyPart part, out bool isDied)
+    public void TryHit(float damage, Vector3 force, Vector3 hitPoint)
     {
-        float ratio;
-        isDied = false;
-        if (damage < 0)
-            throw new InvalidOperationException("Try to heal instead of giving damage");
-        switch (part)
-        {
-            case HitBox.BodyPart.Down:
-                ratio = DOWN_RATIO;
-                break;
-            case HitBox.BodyPart.Middle:
-                ratio = MIDDLE_RATIO;
-                break;
-            case HitBox.BodyPart.Top:
-                ratio = TOP_RATIO;
-                break;
-            default:
-                return;
-        }
+        var rigidbodyHit = _bodyParts
+            .OrderBy(rigidbody => Vector3.Distance(rigidbody.position, hitPoint))
+            .First();
 
-        Health -= damage * ratio;
-        if (Health <= 0)
-            isDied = true;
+        TakeDamage(damage * CalculateDamage(rigidbodyHit.GetComponent<Collider>()),
+            () => rigidbodyHit.AddForceAtPosition(force, hitPoint, ForceMode.Impulse));
     }
 
-    private void OnDied(Rigidbody part, Vector3 force, Vector3 hitPoint)
+    public void TryHit(float damage, Collider bodyPart, Vector3 force)
     {
-        _stateMachine.ChangeState(_states[2]);
-        part.AddForceAtPosition(force, hitPoint, ForceMode.Impulse);
+        TakeDamage(damage * CalculateDamage(bodyPart),
+           () => bodyPart.GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse));
+    }
+
+    private void TakeDamage(float overrallDamage, Action onDied)
+    {
+        if (overrallDamage < 0)
+            throw new InvalidOperationException("Try to heal instead of giving damage");
+
+        Health -= overrallDamage;
+
+        if (Health <= 0)
+        {
+            _stateMachine.ChangeState(_states[2]);
+            onDied?.Invoke();
+        }
+    }
+
+    private float CalculateDamage(Collider collider)
+    {
+        var type = HitBox.BodyPart.None;
+
+        foreach (var hitBox in _hitBoxes)
+            if (collider == hitBox.HitCollider)
+            {
+                type = hitBox.Part;
+                break;
+            }
+
+        switch (type)
+        {
+            case HitBox.BodyPart.Down:
+                return DOWN_RATIO;
+            case HitBox.BodyPart.Middle:
+                return MIDDLE_RATIO;
+            case HitBox.BodyPart.Top:
+                return TOP_RATIO;
+            default:
+                return 0f;
+        }
     }
 
     private void EnableRagdoll()

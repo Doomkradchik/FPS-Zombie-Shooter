@@ -71,6 +71,6 @@ public abstract class FpsWeapon : MonoBehaviour
     public abstract void Hit();
     protected void OnZombieHit(Zombie zombie, Vector3 hitPoint)
     {
-        zombie.OnHit(_raycaster.Ray.direction.normalized * ShotForce, hitPoint, Damage);
+        zombie.TryHit(Damage, _raycaster.Ray.direction.normalized * ShotForce, hitPoint);
     }
 }

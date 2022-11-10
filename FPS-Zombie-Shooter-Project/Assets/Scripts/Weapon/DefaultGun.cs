@@ -74,6 +74,9 @@ public class DefaultGun : FpsWeapon
 
         if (_raycaster.TryThrowRay(MaxDistance, out (Zombie, Vector3) data))
             OnZombieHit(data.Item1, data.Item2);
+
+        if (_raycaster.TryThrowRay(MaxDistance, out BarrelFuel barrel))
+            barrel.Explode();
     }
 
     public void Reload()

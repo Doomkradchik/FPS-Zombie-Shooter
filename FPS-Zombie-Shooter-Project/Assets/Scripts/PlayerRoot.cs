@@ -85,11 +85,11 @@ public class PlayerRoot : MonoBehaviour
         if (damage < 0f)
             throw new System.InvalidOperationException();
 
+        Health -= damage;
         _cameraShakeFX.InduceStress();
         _healthView.UpdateHealthText(Health);
         _healthView.PerformScreenEffect(PlayerHealthView.ScreenFXKind.Hurt);
 
-        Health -= damage;
         if (Health <= 0f)
             OnDie();
     }
