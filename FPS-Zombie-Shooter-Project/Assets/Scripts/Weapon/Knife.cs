@@ -3,9 +3,9 @@ using Random = UnityEngine.Random;
 
 public class Knife : FpsWeapon
 {
-    protected override float MaxDistance => 2f;
-    protected override float ShotForce => 50f;
-    protected override float Damage => 500f;
+    protected override float MaxDistance => 1f;
+    protected override float ShotForce => 200f;
+    protected override float Damage => 200f;
 
     public override void Hit()
     {

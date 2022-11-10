@@ -9,9 +9,18 @@ public class Interaction : MonoBehaviour
     private UnityEvent Interacted;
 
     public string PromptText => _promptMessage;
+    private bool Lock() => CanInteract = false;
+
+    public bool CanInteract { get; private set; } = true;
     public virtual void Interact()
     {
-        Interacted?.Invoke();
-        Debug.Log("Interacted");
+        if (CanInteract)
+        {
+            Interacted?.Invoke();
+            OnInteracted();
+            Lock();
+        }
     }
+
+    protected virtual void OnInteracted() { }
 }

@@ -12,19 +12,17 @@ public class DefaultGun : FpsWeapon
     private Transform _gunNozzle;
     [SerializeField]
     private GameObject _muzzleFlashPrefab;
-    [SerializeField]
-    private int _maxBullets;
     public int Bullets { get; private set; }
-    public int MaxBullets => _maxBullets;
 
     private static readonly int _idleState
             = Animator.StringToHash("Idle");
     private static readonly int _realoadState
             = Animator.StringToHash("Reload");
 
+    public int MaxBullets => 20;
     protected override float MaxDistance => 100f;
     protected override float ShotForce => 150f;
-    protected override float Damage => 200f; // to do
+    protected override float Damage => 100f; // to do
 
     private readonly float _volume = 0.5f;
 
@@ -32,7 +30,7 @@ public class DefaultGun : FpsWeapon
     {
         base.OnEnable();
 
-        Bullets = _maxBullets;
+        Bullets = MaxBullets;
     }
     public override void Unhide()
     {
@@ -87,7 +85,7 @@ public class DefaultGun : FpsWeapon
         if (CurrentState.shortNameHash == _realoadState)
             return;
 
-        if (Bullets + 1 > _maxBullets)
+        if (Bullets + 1 > MaxBullets)
             return;
 
         _animator.SetTrigger(AnimationTrigger.Reload);
@@ -95,7 +93,7 @@ public class DefaultGun : FpsWeapon
 
     public void OnReloaded()
     {
-        Bullets = _maxBullets;
+        Bullets = MaxBullets;
         _onDataChanged?.Invoke(this);
     }
 

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public class Zombie : MonoBehaviour
 {
@@ -24,6 +26,12 @@ public class Zombie : MonoBehaviour
     private const float MIDDLE_RATIO = 0.5f;
     private const float DOWN_RATIO = 0.25f;
 
+    private readonly float _maxWalkingSpeed = 6f;
+    private readonly float _maxAnimationSpeed = 2f;
+    private readonly float _maxWalkingStateDuration = 5f;
+
+    private readonly string _blendKey = "Blend";
+
     private static int _attackState =
         Animator.StringToHash("Attack");
 
@@ -45,7 +53,12 @@ public class Zombie : MonoBehaviour
     {
         _states = new ZombieState[]
         {
-            new WalkingState(DisableRagdoll, _controller, _target.transform),
+            new WalkingState(() =>
+            {
+                DisableRagdoll();
+                StartCoroutine(ChangeWalkingState());
+            }, () => StopAllCoroutines(), _controller, _target.transform),
+
             new AttackState(_animator),
             new DiedState(EnableRagdoll)
         };
@@ -144,7 +157,22 @@ public class Zombie : MonoBehaviour
         _animator.enabled = true;
         _controller.enabled = true;
     }
+
+    private IEnumerator ChangeWalkingState()
+    {
+        while (true)
+        {
+            var random = Random.value;
+            var min = 1f;
+            _animator.SetFloat(_blendKey, random);
+            _controller.speed = random * _maxWalkingSpeed + min;
+            _animator.speed = random * _maxAnimationSpeed + min;
+            yield return new WaitForSeconds(random * _maxWalkingStateDuration + min);
+        }
+    }
 }
+
+
 public abstract class ZombieState
 {
     public abstract void Enter();
@@ -159,6 +187,9 @@ public class ZombieStateMachine
     {
         if(currentState == null || currentState != newState)
         {
+            if (currentState is WalkingState ws)
+                ws.Exit();
+
             currentState = newState;
             currentState.Enter();
         }   
@@ -186,19 +217,22 @@ public sealed class AttackState : ZombieState
 
 public sealed class WalkingState : ZombieState
 {
-    public WalkingState(Action disable, NavMeshAgent controller,
+    public WalkingState(Action disable, Action onEnded, NavMeshAgent controller,
         Transform target)  
     {
         this.disable = disable;
+        this.onEnded = onEnded;
         this.controller = controller;
         this.target = target;
     }
 
     private readonly Action disable;
+    private readonly Action onEnded;
     private readonly NavMeshAgent controller;
     private readonly Transform target;
 
     public override void Enter() => disable?.Invoke();
+    public void Exit() => onEnded?.Invoke();
 
     private const float DELTA_ANGLE = 120f;
 
@@ -206,7 +240,6 @@ public sealed class WalkingState : ZombieState
     {
         var direction = target.position - controller.transform.position;
         direction = new Vector3(direction.x, 0f, direction.z);
-
         LookAt(direction, deltaTime);
         Move();
     }

@@ -27,7 +27,8 @@ public class PlayerRoot : MonoBehaviour
 
     private readonly float _interactionDistance = 2f;
 
-    public float Health { get; private set; } = 100f;
+    private const float MAX_HEALTH = 100f;
+    public float Health { get; private set; } = MAX_HEALTH;
 
     private Interaction _target;
 
@@ -65,7 +66,11 @@ public class PlayerRoot : MonoBehaviour
     private void Update()
     {
         _detector.TryThrowRay(_interactionDistance, out Interaction interaction);
-        CurrentTarget = interaction;
+
+        if(interaction != null && interaction.CanInteract)
+          CurrentTarget = interaction;
+        else
+          CurrentTarget = null;
     }
 
     private void OnEnable()
@@ -94,6 +99,20 @@ public class PlayerRoot : MonoBehaviour
             OnDie();
     }
 
+    public void Heal(float hp)
+    {
+        if (hp < 0f)
+            throw new System.InvalidOperationException();
+
+        if (Health + hp > MAX_HEALTH)
+            Health = MAX_HEALTH;
+        else
+            Health += hp;
+
+        _healthView.UpdateHealthText(Health);
+        _healthView.PerformScreenEffect(PlayerHealthView.ScreenFXKind.Heal);
+
+    }
     private void OnDie()
     {
         //throw new NotImplementedException();
