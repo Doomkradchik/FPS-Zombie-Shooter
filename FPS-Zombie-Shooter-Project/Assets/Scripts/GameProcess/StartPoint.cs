@@ -50,6 +50,7 @@ public class StartPoint : MonoBehaviour
     {
         foreach (var alarm in _alarms)
             alarm.SetBool(_playKey, false);
+
         _navMesh.BuildNavMesh();
         AudioManager.Instance.StopSound(AudioData.Kind.Alarm);
     }

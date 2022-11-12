@@ -21,14 +21,14 @@ public class Zombie : MonoBehaviour
     private ZombieStateMachine _stateMachine;
     private AudioSource[] _audioSources;
 
-    public float Health { get; private set; } = 100f;
-    public float Damage => 20f;
+    public float Health { get; private set; } = 80f;
+    public float Damage => 10;
 
     private const float TOP_RATIO = 1f;
     private const float MIDDLE_RATIO = 0.5f;
     private const float DOWN_RATIO = 0.25f;
 
-    private readonly float _maxWalkingSpeed = 6f;
+    private readonly float _maxWalkingSpeed = 3f;
     private readonly float _maxAnimationSpeed = 2f;
     private readonly float _maxWalkingStateDuration = 5f;
 

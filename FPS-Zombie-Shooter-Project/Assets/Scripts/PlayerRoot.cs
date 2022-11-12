@@ -28,7 +28,7 @@ public class PlayerRoot : MonoBehaviour
 
     private readonly float _interactionDistance = 2f;
 
-    private const float MAX_HEALTH = 100f;
+    private const float MAX_HEALTH = 200f;
     public float Health { get; private set; } = MAX_HEALTH;
 
     private Interaction _target;
@@ -93,15 +93,16 @@ public class PlayerRoot : MonoBehaviour
             throw new System.InvalidOperationException();
 
         Health -= damage;
-        _cameraShakeFX.InduceStress();
-        _healthView.UpdateHealthText(Health);
-        _healthView.PerformScreenEffect(PlayerHealthView.ScreenFXKind.Hurt);
 
         if (Health <= 0f)
         {
-            OnDie();
             Health = 0f;
+            OnDie();
         }
+
+        _cameraShakeFX.InduceStress();
+        _healthView.UpdateHealthText(Health);
+        _healthView.PerformScreenEffect(PlayerHealthView.ScreenFXKind.Hurt);
     }
 
     public void Heal(float hp)

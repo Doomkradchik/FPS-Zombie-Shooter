@@ -15,7 +15,7 @@ public class MovementSystem : MonoBehaviour
 
     private void Start()
     {
-        _currentRightAxis = transform.localRotation.eulerAngles.y;
+        _currentRightAxis = transform.localRotation.eulerAngles.x;
     }
 
     public void LookAt(Vector2 mouseOffset)
