@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
@@ -18,6 +19,7 @@ public class Zombie : MonoBehaviour
     private Animator _animator;
 
     private ZombieStateMachine _stateMachine;
+    private AudioSource[] _audioSources;
 
     public float Health { get; private set; } = 100f;
     public float Damage => 20f;
@@ -46,7 +48,8 @@ public class Zombie : MonoBehaviour
     {
         _controller = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
-        _bodyParts = GetComponentsInChildren<Rigidbody>(); 
+        _bodyParts = GetComponentsInChildren<Rigidbody>();
+        _audioSources = GetComponents<AudioSource>();
     }
 
     private void Start()
@@ -167,6 +170,9 @@ public class Zombie : MonoBehaviour
             _animator.SetFloat(_blendKey, random);
             _controller.speed = random * _maxWalkingSpeed + min;
             _animator.speed = random * _maxAnimationSpeed + min;
+
+
+            _audioSources[Random.Range(0, _audioSources.Length)].Play();
             yield return new WaitForSeconds(random * _maxWalkingStateDuration + min);
         }
     }
@@ -250,7 +256,6 @@ public sealed class WalkingState : ZombieState
         var transform = controller.transform;
         transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, DELTA_ANGLE * deltaTime);
     }
-
     private void Move()
     {
         controller.SetDestination(target.position);

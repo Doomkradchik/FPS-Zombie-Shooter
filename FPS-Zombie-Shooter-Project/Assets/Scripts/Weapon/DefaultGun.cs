@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class DefaultGun : FpsWeapon
 {
@@ -24,8 +22,6 @@ public class DefaultGun : FpsWeapon
     protected override float ShotForce => 150f;
     protected override float Damage => 100f; // to do
 
-    private readonly float _volume = 0.5f;
-
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -35,11 +31,8 @@ public class DefaultGun : FpsWeapon
     public override void Unhide()
     {
         base.Unhide();
-        var performing = _audioDatas
-            .Find(audio => audio.Kind == AudioDataClip.AudioKind.Perform);
 
-        if (performing != null && performing.Clip != null)
-            _gunAudioSouce.PlayOneShot(performing.Clip, _volume);    
+        AudioManager.Instance.PlaySound(AudioData.Kind.Perform);
     }
 
     public override void Hit()
@@ -59,13 +52,8 @@ public class DefaultGun : FpsWeapon
         Bullets--;
         _onDataChanged?.Invoke(this);
         _animator.SetTrigger(AnimationTrigger.Shoot);
+        AudioManager.Instance.PlaySound(AudioData.Kind.Shoot);
         SpawnMuzzleFlash();
-
-        var shootAudio = _audioDatas
-            .Find(audio => audio.Kind == AudioDataClip.AudioKind.Shoot);
-
-        if (shootAudio != null && shootAudio.Clip != null)
-            _gunAudioSouce.PlayOneShot(shootAudio.Clip, _volume);
 
         if (_raycaster.TryThrowRay(MaxDistance, out RaycastHit hit, _layerMask))
             Instantiate(_holePrefab, hit.point, Quaternion.LookRotation(hit.normal));
@@ -116,20 +104,3 @@ public class AnimationTrigger
     public static readonly string CanShoot = "CanShoot";
 }
 
-
-[Serializable]
-public sealed class AudioDataClip
-{
-    [SerializeField]
-    private AudioKind _kind;
-    [SerializeField]
-    private AudioClip _clip;
-    public AudioKind Kind => _kind;
-    public AudioClip Clip => _clip;
-
-    public enum AudioKind
-    {
-        Shoot, 
-        Perform
-    }
-}

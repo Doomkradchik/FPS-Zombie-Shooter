@@ -8,17 +8,17 @@ public class StressReceiver : MonoBehaviour
     public float TraumaExponent = 1;
     public Vector3 MaximumAngularShake = Vector3.one * 5;
     public Vector3 MaximumTranslationShake = Vector3.one * .75f;
-    public float _stress = 1;
+    public float _stress;
 
     private void Update()
     {
         float shake = Mathf.Pow(_trauma, TraumaExponent);
-        /* Only apply this when there is active trauma */
+
         if(shake > 0)
         {
             var previousRotation = _lastRotation;
             var previousPosition = _lastPosition;
-            /* In order to avoid affecting the transform current position and rotation each frame we substract the previous translation and rotation */
+        
             _lastPosition = new Vector3(
                 MaximumTranslationShake.x * (Mathf.PerlinNoise(0, Time.time * 25) * 2 - 1),
                 MaximumTranslationShake.y * (Mathf.PerlinNoise(1, Time.time * 25) * 2 - 1),
@@ -38,7 +38,6 @@ public class StressReceiver : MonoBehaviour
         else
         {
             if (_lastPosition == Vector3.zero && _lastRotation == Vector3.zero) return;
-            /* Clear the transform of any left over translation and rotations */
             transform.localPosition -= _lastPosition;
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles - _lastRotation);
             _lastPosition = Vector3.zero;
@@ -46,12 +45,12 @@ public class StressReceiver : MonoBehaviour
         }
     }
 
-    /// <summary>
-    ///  Applies a stress value to the current object.
-    /// </summary>
-    /// <param name="Stress">[0,1] Amount of stress to apply to the object</param>
     
-    [ContextMenu("Shake")]
+    public void InduceStress(float stress)
+    {
+        _trauma = Mathf.Clamp01(_trauma + stress);
+    }
+
     public void InduceStress()
     {
         _trauma = Mathf.Clamp01(_trauma + _stress);

@@ -24,6 +24,7 @@ public class PlayerRoot : MonoBehaviour
     private WeaponInventory _inventory;
     private ClientRaycaster _detector;
     private MovementSystem _movementSystem;
+    private GameOverView _gameOverView;
 
     private readonly float _interactionDistance = 2f;
 
@@ -48,6 +49,7 @@ public class PlayerRoot : MonoBehaviour
 
     private void Awake()
     {
+        _gameOverView = FindObjectOfType<GameOverView>();
         _movementSystem = GetComponent<MovementSystem>();
         _detector = GetComponent<ClientRaycaster>();
 
@@ -96,7 +98,10 @@ public class PlayerRoot : MonoBehaviour
         _healthView.PerformScreenEffect(PlayerHealthView.ScreenFXKind.Hurt);
 
         if (Health <= 0f)
+        {
             OnDie();
+            Health = 0f;
+        }
     }
 
     public void Heal(float hp)
@@ -113,8 +118,5 @@ public class PlayerRoot : MonoBehaviour
         _healthView.PerformScreenEffect(PlayerHealthView.ScreenFXKind.Heal);
 
     }
-    private void OnDie()
-    {
-        //throw new NotImplementedException();
-    }
+    private void OnDie() => _gameOverView.ReloadLevel();
 }

@@ -11,8 +11,14 @@ public class BarrelFuel : MonoBehaviour
     [SerializeField]
     private GameObject _explosionEffect;
 
-
+    private StressReceiver _shakeFX;
     private float _damage = 100f;
+    private readonly float _stress = 0.8f;
+
+    private void Start()
+    {
+        _shakeFX = FindObjectOfType<StressReceiver>();
+    }
 
     [ContextMenu("Explode")]
     public void Explode()
@@ -29,6 +35,7 @@ public class BarrelFuel : MonoBehaviour
             zombie.TryHit(_damage, collider, direction * _forceMagnitude);
         }
 
+        _shakeFX.InduceStress(_stress);
         Instantiate(_explosionEffect, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }

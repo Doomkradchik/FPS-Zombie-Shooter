@@ -7,11 +7,6 @@ public abstract class FpsWeapon : MonoBehaviour
 {
     [SerializeField]
     protected Animator _animator;
-    [SerializeField]
-    protected AudioSource _gunAudioSouce;
-    [SerializeField]
-    protected List<AudioDataClip> _audioDatas;
-
 
     private readonly int _animatorLayerIndex = 0;
     protected AnimatorStateInfo CurrentState =>
