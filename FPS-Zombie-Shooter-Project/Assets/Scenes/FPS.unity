@@ -86499,7 +86499,7 @@ MonoBehaviour:
   _head: {fileID: 896383718}
   _unitsPerSecond: 5
   _sensitivityX: 160
-  _sensitivityY: 50
+  _sensitivityY: 65
 --- !u!136 &1818816192
 CapsuleCollider:
   m_ObjectHideFlags: 0
