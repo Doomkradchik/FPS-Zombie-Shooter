@@ -27,7 +27,7 @@ public class GameOverView : MonoBehaviour
     {
         _crossfade.SetTrigger("End");
         yield return new WaitForSeconds(duration);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // reloading the scene (level)
     }
 
 }

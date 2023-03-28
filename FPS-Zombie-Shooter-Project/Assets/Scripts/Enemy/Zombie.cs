@@ -91,7 +91,7 @@ public class Zombie : MonoBehaviour
 
     public void TryHit(float damage, Vector3 force, Vector3 hitPoint)
     {
-        var rigidbodyHit = _bodyParts
+        var rigidbodyHit = _bodyParts // system.Linq library => slow, use only at the beginning
             .OrderBy(rigidbody => Vector3.Distance(rigidbody.position, hitPoint))
             .First();
 
@@ -179,7 +179,7 @@ public class Zombie : MonoBehaviour
 }
 
 
-public abstract class ZombieState
+public abstract class ZombieState // 
 {
     public abstract void Enter();
     public abstract void UpdateState(float deltaTime);

@@ -6,7 +6,7 @@ public class Interaction : MonoBehaviour
     [SerializeField]
     private string _promptMessage;
     [SerializeField]
-    private UnityEvent Interacted;
+    private UnityEvent Interacted; // what to do if we interuct with this object
 
     public string PromptText => _promptMessage;
     private bool Lock() => CanInteract = false;
