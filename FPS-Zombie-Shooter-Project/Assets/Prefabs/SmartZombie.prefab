@@ -72,6 +72,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 505083647707357573}
   m_ConnectedBody: {fileID: 7125680577292280225}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -556,6 +557,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1497536480744368703}
   m_ConnectedBody: {fileID: 7125680576202573605}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: -1}
   m_AutoConfigureConnectedAnchor: 1
@@ -665,6 +667,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1500527558397666443}
   m_ConnectedBody: {fileID: 7125680577647501333}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -774,6 +777,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1569608387755939961}
   m_ConnectedBody: {fileID: 7125680577016172887}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -1258,6 +1262,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3871100263321515609}
   m_ConnectedBody: {fileID: 7125680577248092515}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -1367,6 +1372,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3911981435661439366}
   m_ConnectedBody: {fileID: 7125680577292280225}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -2126,6 +2132,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7351120897387531104}
   m_ConnectedBody: {fileID: 7125680577292280225}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -2266,6 +2273,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7838694465988689473}
   m_ConnectedBody: {fileID: 7125680576202573605}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: -1}
   m_AutoConfigureConnectedAnchor: 1
@@ -2377,7 +2385,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7936162138401638037}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 6b65dc50d2d88b344af1132252bc20fe, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 73f4c0292aed70f4d95aaef6325fc908, type: 3}
   m_Controller: {fileID: 9100000, guid: 8c73b3da31bf7684290798753f5adc99, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
@@ -2729,6 +2737,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8655264181853626441}
   m_ConnectedBody: {fileID: 7125680577890703145}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -2837,6 +2846,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8790810986405124561}
   m_ConnectedBody: {fileID: 7125680576202573605}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -2982,11 +2992,12 @@ SkinnedMeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 3085932710023342842, guid: 6b65dc50d2d88b344af1132252bc20fe, type: 3}
-  - {fileID: 4053863659920533717, guid: 6b65dc50d2d88b344af1132252bc20fe, type: 3}
+  - {fileID: 2100000, guid: adb32f466fffeb548a8caef975e39deb, type: 2}
+  - {fileID: 2100000, guid: b6183cdc96e000d4ab6f5854ca848e67, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3011,7 +3022,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -497688465526345628, guid: 6b65dc50d2d88b344af1132252bc20fe, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 8fdb77a93fbe4ec46896a8c15c3450b0, type: 2}
   m_Bones:
   - {fileID: 6424585646760590297}
   - {fileID: 3414865831908584396}
